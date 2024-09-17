@@ -361,7 +361,12 @@ export class TabBarRenderer extends TabBar.Renderer {
         if (this.tabBar && this.decoratorService) {
             const owner: { resetTabBarDecorations?: () => void; } & Widget = title.owner;
             if (!owner.resetTabBarDecorations) {
-                owner.resetTabBarDecorations = () => this.decorations.delete(title);
+                owner.resetTabBarDecorations = () => {
+                    this.decorations.delete(title);
+                    if (owner.resetTabBarDecorations) {
+                        title.owner.disposed.disconnect(owner.resetTabBarDecorations);
+                    }
+                };
                 title.owner.disposed.connect(owner.resetTabBarDecorations);
             }
 
